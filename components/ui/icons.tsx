@@ -131,7 +131,7 @@ export const Icons = {
   ),
   spinner: (props: IconProps) => (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
+      xmlns="http://www.w.org/2000/svg"
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -143,6 +143,30 @@ export const Icons = {
       {...props}
     >
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+  ),
+  sun: (props: IconProps) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
+      <path
+        d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM12 2v2h-1V2zm0 19v2h-1v-2zM4.22 4.22l1.41 1.41-.7.7-1.42-1.4zM18.36 18.36l1.41 1.41-.7.7-1.42-1.4zM2 12h2v-1H2zm19 0h2v-1h-2zM4.22 19.78l1.41-1.41.7.7-1.42 1.4zM18.36 5.64l1.41-1.41.7.7-1.42 1.4z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  moon: (props: IconProps) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
+      <path
+        d="M12 11.83A10.15 10.15 0 0 0 13 2a9.92 9.92 0 0 1 9 10 9.92 9.92 0 0 1-10 9 9.92 9.92 0 0 1-9-10 9.92 9.92 0 0 1 9-9z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  laptop: (props: IconProps) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
+      <path
+        d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"
+        fill="currentColor"
+      />
     </svg>
   ),
 }

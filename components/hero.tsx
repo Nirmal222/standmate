@@ -3,7 +3,7 @@ import { HeroWithMockup } from "@/components/blocks/hero-with-mockup"
 export default function Hero() {
   return (
     <HeroWithMockup
-      title="Deliver AI-powered Projects in days, not months"
+      title="Deliver AI-Powered projects in days, not months"
       description="Create sophisticated AI applications with our intuitive platform. No ML expertise required."
       primaryCta={{
         text: "Start Building",

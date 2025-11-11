@@ -41,7 +41,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
@@ -50,8 +50,13 @@ const data = {
       icon: IconFolder,
     },
     {
+      title: "Boards",
+      url: "/boards",
+      icon: IconDashboard,
+    },
+    {
       title: "Brainstorms",
-      url: "#",
+      url: "/brainstorms",
       icon: Brain,
     },
     {
