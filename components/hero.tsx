@@ -3,21 +3,21 @@ import { HeroWithMockup } from "@/components/blocks/hero-with-mockup"
 export default function Hero() {
   return (
     <HeroWithMockup
-      title="Deliver AI-Powered projects in days, not months"
-      description="Create sophisticated AI applications with our intuitive platform. No ML expertise required."
+      title="Your AI Project Manager That Delivers 10X Faster"
+      description="Autonomous project intelligence that predicts risks, prevents delays, and accelerates delivery—without the management overhead."
       primaryCta={{
-        text: "Start Building",
+        text: "Start Your Free Trial",
         href: "/signup",
       }}
       secondaryCta={{
-        text: "View on GitHub",
-        href: "https://github.com/your-ai-platform",
+        text: "See How It Works",
+        href: "#how-it-works",
       }}
       mockupImage={{
-        alt: "AI Platform Dashboard",
+        alt: "AI Project Manager Dashboard",
         width: 1248,
         height: 765,
-        src: "https://www.launchuicomponents.com/app-light.png"
+        src: "https://www.launchuicomponents.com/app-light.png",
       }}
     />
   )

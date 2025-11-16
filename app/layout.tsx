@@ -14,9 +14,31 @@ const _inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "huzlr.",
-  description: "AI powered project Manager for all your projects.",
-  generator: "huzlr v1.0.0",
+  title: "Huzlr - AI Project Manager | Deliver Projects 10X Faster",
+  description:
+    "Autonomous AI project management that predicts risks, prevents delays, and accelerates delivery. Smart planning, real-time monitoring, and team optimization. Start free trial.",
+  keywords: [
+    "AI project manager",
+    "project management software",
+    "agile project management",
+    "risk forecasting",
+    "team collaboration",
+    "project planning AI",
+  ],
+  openGraph: {
+    title: "Huzlr - AI Project Manager That Delivers 10X Faster",
+    description:
+      "Autonomous project intelligence for engineering teams. Predict risks, prevent delays, optimize resources.",
+    images: ["/og-image.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Huzlr - AI Project Manager",
+    description:
+      "Deliver projects 10X faster with AI-powered project management",
+    images: ["/twitter-image.png"],
+  },
   icons: {
     icon: "/favicon.png",
   },

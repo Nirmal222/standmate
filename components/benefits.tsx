@@ -3,10 +3,10 @@ import { TrendingUp, Clock, Smile, Eye } from "lucide-react"
 
 export function Benefits() {
   const benefits = [
-    { stat: "40%", desc: "Faster delivery times", icon: Clock },
-    { stat: "Fewer", desc: "Missed deadlines", icon: TrendingUp },
-    { stat: "Less", desc: "Team burnout", icon: Smile },
-    { stat: "Full", desc: "Transparency", icon: Eye },
+    { stat: "3x Faster", desc: "Delivery Speed", icon: Clock },
+    { stat: "85% Reduction", desc: "In Missed Deadlines", icon: TrendingUp },
+    { stat: "60% Less", desc: "Team Burnout", icon: Smile },
+    { stat: "100% Real-time", desc: "Project Visibility", icon: Eye },
   ]
 
   return (
