@@ -60,7 +60,7 @@ export function Features() {
         {/* Header */}
         <div className="text-center space-y-4">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Our <span className="text-accent">Core Innovations</span>
+            Our Core Innovations
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Each capability represents a leap toward autonomous, intelligent delivery — designed to make modern project execution seamless.

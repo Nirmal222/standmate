@@ -9,7 +9,7 @@ export function LogoCloud() {
   const companies: Company[] = [
     { name: "Microsoft", src: "/microsoft.png" },
     { name: "Google", src: "/google.png" },
-    { name: "Stripe", src: "/stripe.jpeg" },
+    { name: "Stripe", src: "/stripe.png" },
     { name: "Slack", src: "/slack.png" },
     { name: "GitHub", src: "/github.png" },
     { name: "Netflix", src: "/netflix.webp" },

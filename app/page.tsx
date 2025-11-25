@@ -1,7 +1,7 @@
 import { Benefits } from "@/components/benefits"
 import { CTA } from "@/components/cta"
 import { FAQ } from "@/components/faq"
-import { Features } from "@/components/features"
+import { AnimatedBeamFeatures } from "@/components/animated-beam-features"
 import { Footer } from "@/components/footer"
 import Hero from "@/components/hero"
 import { HowItWorks } from "@/components/how-it-works"
@@ -39,7 +39,7 @@ export default function Home() {
       <Hero />
       <IdealCustomers />
       <HowItWorks />
-      <Features />
+      <AnimatedBeamFeatures />
       <Benefits />
       <FAQ />
       <CTA />

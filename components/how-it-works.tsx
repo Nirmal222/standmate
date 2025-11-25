@@ -19,20 +19,20 @@ const content = [
       <div className="h-full w-full flex items-center justify-center text-foreground">
         <div className="relative flex items-center justify-center w-full h-full">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-48 rounded-full border border-dashed border-foreground/20 animate-spin-slow" />
+            <div className="w-48 h-48 rounded-full border border-dashed border-primary/30 animate-spin-slow" />
           </div>
-          <div className="relative z-10 h-16 w-16 rounded-2xl bg-foreground/10 backdrop-blur-md flex items-center justify-center shadow-xl">
-            <span className="text-2xl font-bold text-foreground">H</span>
+          <div className="relative z-10 h-16 w-16 rounded-2xl bg-primary/10 backdrop-blur-md flex items-center justify-center shadow-xl border border-primary/20">
+            <span className="text-2xl font-bold text-primary">H</span>
           </div>
           {/* Orbiting Icons */}
-          <div className="absolute top-1/4 left-1/4 p-2 rounded-xl bg-foreground/10 backdrop-blur-md border border-foreground/10 shadow-sm animate-bounce-slow">
-            <GitBranch className="h-5 w-5 text-foreground" />
+          <div className="absolute top-1/4 left-1/4 p-2 rounded-xl bg-chart-1/10 backdrop-blur-md border border-chart-1/20 shadow-sm animate-bounce-slow">
+            <GitBranch className="h-5 w-5 text-chart-1" />
           </div>
-          <div className="absolute bottom-1/4 right-1/4 p-2 rounded-xl bg-foreground/10 backdrop-blur-md border border-foreground/10 shadow-sm animate-bounce-slow delay-100">
-            <Slack className="h-5 w-5 text-foreground" />
+          <div className="absolute bottom-1/4 right-1/4 p-2 rounded-xl bg-chart-2/10 backdrop-blur-md border border-chart-2/20 shadow-sm animate-bounce-slow delay-100">
+            <Slack className="h-5 w-5 text-chart-2" />
           </div>
-          <div className="absolute top-1/3 right-1/3 p-2 rounded-xl bg-foreground/10 backdrop-blur-md border border-foreground/10 shadow-sm animate-bounce-slow delay-200">
-            <Trello className="h-5 w-5 text-foreground" />
+          <div className="absolute top-1/3 right-1/3 p-2 rounded-xl bg-chart-3/10 backdrop-blur-md border border-chart-3/20 shadow-sm animate-bounce-slow delay-200">
+            <Trello className="h-5 w-5 text-chart-3" />
           </div>
         </div>
       </div>
@@ -43,30 +43,36 @@ const content = [
     description:
       "Gain X-ray vision into your project's pulse with AI-powered analytics. Track commit velocity, PR cycle times, code review patterns, and team communication sentiment—all in real-time. Our intelligent monitoring system doesn't just show you metrics; it understands context. Spot bottlenecks before they become blockers, identify at-risk deliverables weeks in advance, and understand team workload distribution at a glance. Every metric is actionable, every insight is timely, and every alert is meaningful.",
     content: (
-      <div className="h-full w-full p-6 flex flex-col justify-center text-foreground">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium text-foreground/80">Project Health</span>
-          <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">Healthy</span>
-        </div>
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between text-xs">
-            <span>Velocity</span>
-            <span className="font-medium">84%</span>
-          </div>
-          <div className="h-2 w-full bg-foreground/10 rounded-full overflow-hidden">
-            <div className="h-full bg-foreground w-[84%]" />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 bg-foreground/10 rounded-lg backdrop-blur-sm">
-            <Activity className="h-5 w-5 text-foreground mb-2" />
-            <div className="text-xl font-bold">12</div>
-            <div className="text-[10px] text-foreground/60">Active PRs</div>
-          </div>
-          <div className="p-3 bg-foreground/10 rounded-lg backdrop-blur-sm">
-            <GitBranch className="h-5 w-5 text-foreground mb-2" />
-            <div className="text-xl font-bold">45</div>
-            <div className="text-[10px] text-foreground/60">Commits</div>
+      <div className="h-full w-full p-2 flex items-center justify-center text-foreground">
+        <div className="w-full max-w-md">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="aspect-square rounded-lg bg-chart-1/10 border border-chart-1/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-1/70 mb-2">Velocity</div>
+              <div className="text-3xl font-bold text-chart-1">84%</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-2/10 border border-chart-2/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-2/70 mb-2">Review</div>
+              <div className="text-3xl font-bold text-chart-2">2.3h</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-3/10 border border-chart-3/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-3/70 mb-2">Capacity</div>
+              <div className="text-3xl font-bold text-chart-3">91%</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-primary/10 border border-primary/20 flex flex-col items-center justify-center p-3">
+              <Activity className="h-6 w-6 text-primary mb-2" />
+              <div className="text-2xl font-bold text-foreground">12</div>
+              <div className="text-[10px] text-muted-foreground mt-1">Active PRs</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-4/10 border border-chart-4/20 flex flex-col items-center justify-center p-3">
+              <GitBranch className="h-6 w-6 text-chart-4 mb-2" />
+              <div className="text-2xl font-bold text-foreground">45</div>
+              <div className="text-[10px] text-muted-foreground mt-1">Commits</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-5/10 border border-chart-5/20 flex flex-col items-center justify-center p-3">
+              <CheckCircle className="h-6 w-6 text-chart-5 mb-2" />
+              <div className="text-2xl font-bold text-foreground">8</div>
+              <div className="text-[10px] text-muted-foreground mt-1">Merged</div>
+            </div>
           </div>
         </div>
       </div>
@@ -77,21 +83,40 @@ const content = [
     description:
       "See the future before it happens with predictive AI that learns from your team's patterns. Our machine learning models analyze thousands of data points—from historical velocity trends to current sprint dynamics—to forecast timeline drifts with 85% accuracy. Know exactly when a project is veering off track, understand why it's happening, and get specific recommendations to course-correct. Stop reacting to problems and start preventing them. Huzzler's predictive engine turns uncertainty into confidence.",
     content: (
-      <div className="h-full w-full flex items-center justify-center text-foreground p-6">
-        <div className="relative w-full">
-          <div className="absolute -top-6 -right-2 p-3 bg-red-500/20 rounded-xl border border-red-500/30 backdrop-blur-md z-20 animate-pulse">
-            <div className="flex items-center gap-2 text-red-600 dark:text-red-200 font-bold">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="text-xs">Risk Detected</span>
+      <div className="h-full w-full p-2 flex items-center justify-center text-foreground">
+        <div className="w-full max-w-md">
+          <div className="grid grid-cols-6 gap-2 mb-2">
+            <div className="aspect-square rounded-lg bg-chart-1/10 border border-chart-1/20 flex items-end justify-center p-2">
+              <div className="w-full h-[40%] bg-chart-1 rounded-t" />
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-2/10 border border-chart-2/20 flex items-end justify-center p-2">
+              <div className="w-full h-[60%] bg-chart-2 rounded-t" />
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-3/10 border border-chart-3/20 flex items-end justify-center p-2">
+              <div className="w-full h-[50%] bg-chart-3 rounded-t" />
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-4/10 border border-chart-4/20 flex items-end justify-center p-2">
+              <div className="w-full h-[80%] bg-chart-4 rounded-t" />
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-5/10 border border-chart-5/20 flex items-end justify-center p-2">
+              <div className="w-full h-[30%] bg-chart-5 rounded-t" />
+            </div>
+            <div className="aspect-square rounded-lg bg-muted border border-border flex items-end justify-center p-2">
+              <div className="w-full h-[25%] bg-muted-foreground/30 border-2 border-dashed border-muted-foreground/40 rounded-t" />
             </div>
           </div>
-          <div className="bg-foreground/10 backdrop-blur-md rounded-xl border border-foreground/10 shadow-lg p-6 overflow-hidden">
-            <div className="h-24 w-full flex items-end gap-2">
-              <div className="w-6 h-[40%] bg-foreground/20 rounded-t-sm" />
-              <div className="w-6 h-[60%] bg-foreground/40 rounded-t-sm" />
-              <div className="w-6 h-[50%] bg-foreground/30 rounded-t-sm" />
-              <div className="w-6 h-[80%] bg-foreground/60 rounded-t-sm" />
-              <div className="w-6 h-[30%] bg-red-400 rounded-t-sm animate-pulse" />
+          <div className="grid grid-cols-3 gap-3">
+            <div className="aspect-square rounded-lg bg-chart-5/10 border border-chart-5/20 flex flex-col items-center justify-center p-3">
+              <AlertTriangle className="h-6 w-6 text-chart-5 mb-2" />
+              <div className="text-xs text-chart-5/70">Risk Alert</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-accent border border-border flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-muted-foreground mb-2">Delay</div>
+              <div className="text-2xl font-bold text-foreground">3-5d</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-primary/10 border border-primary/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-primary/70 mb-2">Confidence</div>
+              <div className="text-2xl font-bold text-primary">85%</div>
             </div>
           </div>
         </div>
@@ -103,21 +128,33 @@ const content = [
     description:
       "Automate solutions, don't just identify problems. Huzzler doesn't stop at alerts—it takes action. When workload imbalances are detected, we suggest task reassignments. When sprint scope creeps beyond capacity, we recommend adjustments. When code review bottlenecks form, we notify the right people. Every intervention is smart, contextual, and one-click executable. Transform your team from firefighting to forward-thinking. Let automation handle the routine so your team can focus on innovation.",
     content: (
-      <div className="h-full w-full flex items-center justify-center text-foreground p-6">
-        <div className="w-full bg-foreground/10 backdrop-blur-md rounded-xl border border-foreground/10 shadow-lg p-6">
-          <div className="flex items-start gap-4">
-            <div className="h-8 w-8 rounded-full bg-foreground/20 flex items-center justify-center flex-shrink-0">
-              <div className="h-2 w-2 rounded-full bg-foreground animate-ping" />
+      <div className="h-full w-full p-2 flex items-center justify-center text-foreground">
+        <div className="w-full max-w-md">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="aspect-square rounded-lg bg-chart-1/10 border border-chart-1/20 flex flex-col items-center justify-center p-3">
+              <AlertTriangle className="h-6 w-6 text-chart-1 mb-2" />
+              <div className="text-xs text-muted-foreground text-center">Workload</div>
             </div>
-            <div className="space-y-1">
-              <h4 className="font-semibold text-sm">Optimization</h4>
-              <p className="text-xs text-foreground/60">Re-balance workload for Sprint 4.</p>
+            <div className="aspect-square rounded-lg bg-chart-2/10 border border-chart-2/20 flex flex-col items-center justify-center p-3">
+              <Activity className="h-6 w-6 text-chart-2 mb-2" />
+              <div className="text-xs text-muted-foreground text-center">Reviews</div>
             </div>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <button className="flex-1 bg-foreground text-background text-[10px] font-bold py-2 rounded-lg hover:bg-foreground/90 transition-colors">
-              Auto-Fix
-            </button>
+            <div className="aspect-square rounded-lg bg-primary/10 border border-primary/20 flex flex-col items-center justify-center p-3">
+              <CheckCircle className="h-6 w-6 text-primary mb-2" />
+              <div className="text-xs text-muted-foreground text-center">Capacity</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-3/10 border border-chart-3/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-3/70 mb-2">Fixes</div>
+              <div className="text-3xl font-bold text-chart-3">3</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-4/10 border border-chart-4/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-4/70 mb-2">Auto</div>
+              <div className="text-3xl font-bold text-chart-4">2</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-5/10 border border-chart-5/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-5/70 mb-2">Manual</div>
+              <div className="text-3xl font-bold text-chart-5">1</div>
+            </div>
           </div>
         </div>
       </div>
@@ -128,15 +165,33 @@ const content = [
     description:
       "Turn every sprint into a learning opportunity with ML-powered insights. Huzzler's continuous improvement engine analyzes your team's performance patterns, identifies optimization opportunities, and provides actionable recommendations. Refine estimation accuracy sprint over sprint. Optimize team velocity based on real data, not gut feelings. Understand what works, what doesn't, and why. Our platform learns from every project, every commit, every conversation—making your team smarter and faster with each delivery cycle. Get better, automatically.",
     content: (
-      <div className="h-full w-full flex items-center justify-center text-foreground">
-        <div className="relative flex flex-col items-center justify-center">
-          <TrendingUp className="h-32 w-32 text-foreground/10 absolute" strokeWidth={1} />
-          <div className="relative z-20 bg-foreground/10 backdrop-blur-md border border-foreground/10 shadow-xl rounded-2xl p-6 text-center space-y-2">
-            <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-green-400/20 text-green-400 mb-1">
-              <CheckCircle className="h-5 w-5" />
+      <div className="h-full w-full p-2 flex items-center justify-center text-foreground">
+        <div className="w-full max-w-md">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="aspect-square rounded-lg bg-primary/10 border border-primary/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-primary/70 mb-2">Gain</div>
+              <div className="text-3xl font-bold text-primary">+24%</div>
             </div>
-            <div className="text-2xl font-bold text-foreground">+24%</div>
-            <div className="text-xs text-foreground/60">Efficiency Gain</div>
+            <div className="aspect-square rounded-lg bg-chart-1/10 border border-chart-1/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-1/70 mb-2">Accuracy</div>
+              <div className="text-3xl font-bold text-chart-1">92%</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-2/10 border border-chart-2/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-2/70 mb-2">Velocity</div>
+              <div className="text-3xl font-bold text-chart-2">38</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-3/10 border border-chart-3/20 flex flex-col items-center justify-center p-3">
+              <TrendingUp className="h-6 w-6 text-chart-3 mb-2" />
+              <div className="text-xs text-muted-foreground text-center">Trending Up</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-4/10 border border-chart-4/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-4/70 mb-2">Sprints</div>
+              <div className="text-3xl font-bold text-chart-4">6</div>
+            </div>
+            <div className="aspect-square rounded-lg bg-chart-5/10 border border-chart-5/20 flex flex-col items-center justify-center p-3">
+              <div className="text-xs text-chart-5/70 mb-2">Teams</div>
+              <div className="text-3xl font-bold text-chart-5">4</div>
+            </div>
           </div>
         </div>
       </div>
