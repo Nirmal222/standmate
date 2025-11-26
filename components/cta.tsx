@@ -16,7 +16,7 @@ export function CTA() {
         <div className="space-y-6 rounded-lg border border-border bg-card p-8">
           <p className="text-lg text-foreground">
             Your projects don&apos;t just get managed they get intelligently{" "}
-            <span className="text-accent">self-optimized</span>.
+            self-optimized
           </p>
           <div className="flex flex-col items-center gap-4">
             <Link href="/signup">
