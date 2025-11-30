@@ -31,13 +31,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Brain } from "lucide-react"
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks"
+import { fetchCurrentUser } from "@/lib/redux/slices/authSlice"
 
 const data = {
-  user: {
-    name: "huzlr",
-    email: "m@example.com",
-    avatar: "/huzlr-no-bg.png",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -155,6 +152,25 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const dispatch = useAppDispatch()
+  const user = useAppSelector((state) => state.auth.user)
+
+  React.useEffect(() => {
+    if (!user) {
+      dispatch(fetchCurrentUser())
+    }
+  }, [dispatch, user])
+
+  const userData = user ? {
+    name: user.username || user.email.split('@')[0],
+    email: user.email,
+    avatar: "/huzlr-no-bg.png", // Fallback avatar
+  } : {
+    name: "Guest",
+    email: "",
+    avatar: "/huzlr-no-bg.png",
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -177,7 +193,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
   )
