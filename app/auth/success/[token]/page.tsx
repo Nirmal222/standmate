@@ -1,17 +1,22 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAppDispatch } from '@/lib/redux/hooks'
 import { setToken } from '@/lib/redux/slices/authSlice'
 
-export default function AuthSuccessPage() {
+export default function AuthSuccessPage({
+  params
+}: {
+  params: Promise<{ token: string }>
+}) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const dispatch = useAppDispatch()
+  
+  // Unwrap params using React.use() as per Next.js 15 pattern
+  const { token } = React.use(params)
 
   useEffect(() => {
-    const token = searchParams.get('token')
     if (token) {
       // Store in localStorage
       localStorage.setItem('token', token)
@@ -22,10 +27,10 @@ export default function AuthSuccessPage() {
       // Redirect to dashboard
       router.replace('/dashboard')
     } else {
-        // If no token, something went wrong, go back to signup
+        // Should not happen if route matches
         router.replace('/signup?error=no_token')
     }
-  }, [searchParams, router, dispatch])
+  }, [token, router, dispatch])
 
   return (
     <div className="flex h-screen w-full items-center justify-center">
