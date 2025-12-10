@@ -4,7 +4,7 @@ import { TrendingUp, Clock, Smile, Eye } from "lucide-react"
 export function Benefits() {
   const benefits = [
     {
-      stat: "3x Faster",
+      stat: "10x Faster",
       desc: "Delivery Speed",
       icon: Clock,
       className: "bg-primary text-primary-foreground",
