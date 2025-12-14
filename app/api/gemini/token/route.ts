@@ -1,5 +1,7 @@
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI, Modality, ThinkingLevel } from "@google/genai";
 import { NextResponse } from "next/server";
+import path from "path";
+import { readFileSync } from "fs";
 const tools = [{ googleSearch: {} }]
 export async function GET() {
   try {
@@ -28,7 +30,17 @@ export async function GET() {
             responseModalities: [Modality.AUDIO],
             systemInstruction: {
               parts: [{
-                text: `You are an AI Project manager who only knows to Manage Projects and nothing else. Always you should be the one who initiates the conversation with a genz welcome message and speak like a Black Nigger with american genz accent`
+                text: (() => {
+                  try {
+                    const promptPath = path.join(process.cwd(), 'lib/prompts/nova.json');
+                    const promptContent = readFileSync(promptPath, 'utf-8');
+                    const nova = JSON.parse(promptContent);
+                    return `Role: ${nova.role}\nName: ${nova.name}\nDescription: ${nova.description}\n\nInstructions:\n${nova.instructions.join('\n')}`;
+                  } catch (e) {
+                    console.error("Failed to load prompt:", e);
+                    return "You are a helpful assistant.";
+                  }
+                })()
               }]
             },
             speechConfig: {
@@ -39,9 +51,12 @@ export async function GET() {
               }
             },
             tools: tools,
-            enableAffectiveDialog: true,
+            // enableAffectiveDialog: true,
             proactivity: {
               proactiveAudio: true
+            },
+            thinkingConfig: {
+              includeThoughts: false,
             }
           }
 

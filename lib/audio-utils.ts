@@ -17,10 +17,16 @@ export class AudioRecorder {
   private stream: MediaStream | null = null;
   private source: MediaStreamAudioSourceNode | null = null;
   private worklet: AudioWorkletNode | null = null;
-  private onAudioData: (base64: string) => void;
+  private onAudioData: (base64: string, volume: number) => void;
   private sampleRate = 16000;
 
-  constructor(onAudioData: (base64: string) => void) {
+  // Buffering properties
+  private audioBuffer: Int16Array[] = [];
+  private volumeBuffer: number[] = [];
+  private bufferIntervalId: ReturnType<typeof setInterval> | null = null;
+  private bufferIntervalMs = 300;
+
+  constructor(onAudioData: (base64: string, volume: number) => void) {
     this.onAudioData = onAudioData;
   }
 
@@ -35,10 +41,7 @@ export class AudioRecorder {
     });
 
     this.context = new AudioContext({ sampleRate: this.sampleRate });
-    
-    // Fallback if sampleRate isn't supported (some browsers force hardware rate)
-    // We handle resampling if needed, but Context sampleRate is the easiest way if supported.
-    
+
     await this.context.audioWorklet.addModule(
       URL.createObjectURL(new Blob([WORKLET_CODE], { type: "application/javascript" }))
     );
@@ -48,18 +51,64 @@ export class AudioRecorder {
 
     this.worklet.port.onmessage = (event) => {
       const float32Data = event.data;
-      // Convert to Int16
+
+      // Calculate RMS volume
+      let sumSquares = 0;
+      for (let i = 0; i < float32Data.length; i++) {
+        sumSquares += float32Data[i] * float32Data[i];
+      }
+      const rms = Math.sqrt(sumSquares / float32Data.length);
+
+      // Convert to Int16 and buffer
       const int16Data = this.float32ToInt16(float32Data);
-      // Convert to Base64
-      const base64 = this.arrayBufferToBase64(int16Data.buffer);
-      this.onAudioData(base64);
+      this.audioBuffer.push(int16Data);
+      this.volumeBuffer.push(rms);
     };
 
+    // Start the buffer flush interval
+    this.bufferIntervalId = setInterval(() => {
+      this.flushBuffer();
+    }, this.bufferIntervalMs);
+
     this.source.connect(this.worklet);
-    this.worklet.connect(this.context.destination); // Necessary for processing to happen in some browsers
+    this.worklet.connect(this.context.destination);
+  }
+
+  private flushBuffer() {
+    if (this.audioBuffer.length === 0) return;
+
+    // Combine all buffered Int16 arrays into one
+    const totalLength = this.audioBuffer.reduce((sum, arr) => sum + arr.length, 0);
+    const combined = new Int16Array(totalLength);
+    let offset = 0;
+    for (const chunk of this.audioBuffer) {
+      combined.set(chunk, offset);
+      offset += chunk.length;
+    }
+
+    // Calculate average volume from buffered samples
+    const avgVolume = this.volumeBuffer.length > 0
+      ? this.volumeBuffer.reduce((sum, v) => sum + v, 0) / this.volumeBuffer.length
+      : 0;
+
+    // Convert to Base64 and send
+    const base64 = this.arrayBufferToBase64(combined.buffer);
+    this.onAudioData(base64, avgVolume);
+
+    // Clear buffers
+    this.audioBuffer = [];
+    this.volumeBuffer = [];
   }
 
   stop() {
+    // Clear the buffer interval
+    if (this.bufferIntervalId) {
+      clearInterval(this.bufferIntervalId);
+      this.bufferIntervalId = null;
+    }
+    // Flush any remaining buffered audio
+    this.flushBuffer();
+
     if (this.stream) {
       this.stream.getTracks().forEach((track) => track.stop());
       this.stream = null;
@@ -95,12 +144,42 @@ export class AudioPlayer {
   private context: AudioContext;
   private sampleRate = 24000; // Gemini Output Rate
   private nextStartTime = 0;
+  private onPlay?: (volume: number) => void;
+  private analyser: AnalyserNode;
 
-  constructor() {
+  constructor(onPlay?: (volume: number) => void) {
     this.context = new AudioContext();
+    this.onPlay = onPlay;
+    this.analyser = this.context.createAnalyser();
+    this.analyser.fftSize = 256;
+
+    // Periodically check volume if callback is provided
+    if (this.onPlay) {
+      this.checkVolume();
+    }
   }
 
-  play(base64Data: string) {
+  private checkVolume() {
+    if (!this.context || this.context.state === 'closed') return;
+
+    const dataArray = new Uint8Array(this.analyser.fftSize);
+    this.analyser.getByteTimeDomainData(dataArray);
+
+    let sumSquares = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      const normalized = (dataArray[i] - 128) / 128; // -1 to 1
+      sumSquares += normalized * normalized;
+    }
+    const rms = Math.sqrt(sumSquares / dataArray.length);
+
+    this.onPlay?.(rms);
+    requestAnimationFrame(() => this.checkVolume());
+  }
+
+  async play(base64Data: string) {
+    if (this.context.state === 'suspended') {
+      await this.context.resume();
+    }
     const audioData = this.base64ToArrayBuffer(base64Data);
     const int16Data = new Int16Array(audioData);
     const float32Data = this.int16ToFloat32(int16Data);
@@ -110,7 +189,10 @@ export class AudioPlayer {
 
     const source = this.context.createBufferSource();
     source.buffer = buffer;
-    source.connect(this.context.destination);
+
+    // Connect to analyser for volume detection and then to destination
+    source.connect(this.analyser);
+    this.analyser.connect(this.context.destination);
 
     // Schedule playback
     const currentTime = this.context.currentTime;
@@ -123,9 +205,12 @@ export class AudioPlayer {
 
   stop() {
     if (this.context) {
-      this.context.close(); // Or suspend
+      this.context.close();
       this.context = new AudioContext();
       this.nextStartTime = 0;
+      // Recreate analyser for new context
+      this.analyser = this.context.createAnalyser();
+      this.analyser.fftSize = 256;
     }
   }
 

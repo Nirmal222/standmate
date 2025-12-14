@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Mic, PhoneOff, Loader2 } from "lucide-react"
+import { Orb } from "@/components/orb"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,10 +13,19 @@ export function BrainstormInterface() {
     const [inputValue, setInputValue] = React.useState("")
     const [isListening, setIsListening] = React.useState(false)
     const [status, setStatus] = React.useState<"idle" | "connecting" | "connected" | "error">("idle")
+    const [agentVolume, setAgentVolume] = React.useState(0)
+    const [userVolume, setUserVolume] = React.useState(0)
 
     const recorderRef = React.useRef<AudioRecorder | null>(null)
     const playerRef = React.useRef<AudioPlayer | null>(null)
     const sessionRef = React.useRef<any>(null)
+
+    // Debug: Log volume changes
+    React.useEffect(() => {
+        if (agentVolume > 0.01 || userVolume > 0.01) {
+            console.log("📊 Volume:", { agent: agentVolume.toFixed(3), user: userVolume.toFixed(3) })
+        }
+    }, [agentVolume, userVolume])
 
     React.useEffect(() => {
         return () => disconnect()
@@ -30,14 +40,17 @@ export function BrainstormInterface() {
             if (!data.token) throw new Error("Failed to get token")
 
             // 2. Init Client
-            const client = new GoogleGenAI({ 
+            const client = new GoogleGenAI({
                 apiKey: data.token,
-                httpOptions: { apiVersion: 'v1alpha' } 
+                httpOptions: { apiVersion: 'v1alpha' }
             })
 
             // 3. Init Audio
-            playerRef.current = new AudioPlayer()
-            recorderRef.current = new AudioRecorder((base64) => {
+            playerRef.current = new AudioPlayer((volume) => {
+                setAgentVolume(volume)
+            })
+            recorderRef.current = new AudioRecorder((base64, volume) => {
+                setUserVolume(volume)
                 // Determine connection state before sending
                 // The SDK might not expose a simple 'isConnected' on session, 
                 // but we can trust our status state or try/catch
@@ -98,7 +111,7 @@ export function BrainstormInterface() {
         recorderRef.current?.stop()
         playerRef.current?.stop()
         if (sessionRef.current) {
-             // Wrap close in try/catch just in case
+            // Wrap close in try/catch just in case
             try {
                 sessionRef.current.close()
             } catch (e) {
@@ -108,6 +121,8 @@ export function BrainstormInterface() {
         }
         setIsListening(false)
         setStatus("idle")
+        setAgentVolume(0)
+        setUserVolume(0)
     }
 
     const toggleMic = () => {
@@ -141,15 +156,7 @@ export function BrainstormInterface() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-8">
                     {/* Visual Indicator */}
                     <div className="relative flex items-center justify-center">
-                        <div className={`h-32 w-32 rounded-full border-4 flex items-center justify-center transition-colors duration-500 ${
-                            status === "connected" ? "border-primary/20" : "border-muted"
-                        }`}>
-                            <div className={`h-24 w-24 rounded-full border-4 flex items-center justify-center transition-all duration-500 ${
-                                status === "connected" ? "border-primary/50 animate-pulse" : "border-muted/50"
-                            }`}>
-                                {status === "connecting" && <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />}
-                            </div>
-                        </div>
+                        <Orb status={status} agentVolume={agentVolume} userVolume={userVolume} />
                     </div>
 
                     <div className="px-6 py-2 rounded-full bg-background border shadow-sm text-sm font-medium text-muted-foreground">
@@ -181,9 +188,8 @@ export function BrainstormInterface() {
                                 <Button
                                     size="icon"
                                     variant="ghost"
-                                    className={`rounded-full hover:bg-muted ${
-                                        isListening ? "bg-red-100 text-red-600 hover:bg-red-200" : "text-muted-foreground"
-                                    }`}
+                                    className={`rounded-full hover:bg-muted ${isListening ? "bg-red-100 text-red-600 hover:bg-red-200" : "text-muted-foreground"
+                                        }`}
                                     onClick={toggleMic}
                                 >
                                     {status === "connecting" ? (
