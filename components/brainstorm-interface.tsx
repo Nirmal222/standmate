@@ -245,18 +245,20 @@ export function BrainstormInterface() {
 
                     {/* Active Transcript */}
                     {transcripts.length > 0 && (
-                        <div className="bg-secondary rounded-2xl max-h-[10rem] p-4 max-w-[25rem] w-full text-center px-4 animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-scroll">
-                            {(() => {
-                                const latest = transcripts[transcripts.length - 1]
-                                if (!latest || !latest.text) return null
-                                return (
-                                    <p className={`text-sm text-left font-medium leading-relaxed ${latest.role === "user" ? "text-muted-foreground" : "text-foreground"
-                                        }`}>
-                                        <span className="italic font-bold mr-1">{latest.role === "user" ? "You:" : "Gemini:"}</span>
-                                        {latest.text}
-                                    </p>
-                                )
-                            })()}
+                        <div className="h-[10rem] w-[25rem]">
+                            <div className="bg-secondary rounded-2xl p-4 w-full text-center px-4 animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-scroll">
+                                {(() => {
+                                    const latest = transcripts[transcripts.length - 1]
+                                    if (!latest || !latest.text) return null
+                                    return (
+                                        <p className={`text-sm text-left font-medium leading-relaxed ${latest.role === "user" ? "text-muted-foreground" : "text-foreground"
+                                            }`}>
+                                            <span className="italic font-bold mr-1">{latest.role === "user" ? "You:" : "Gemini:"}</span>
+                                            {latest.text}
+                                        </p>
+                                    )
+                                })()}
+                            </div>
                         </div>
                     )}
 

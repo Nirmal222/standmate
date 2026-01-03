@@ -24,7 +24,7 @@ export function SignupForm({
   const router = useRouter()
   const dispatch = useAppDispatch()
   const { loading, error } = useAppSelector((state) => state.auth)
-  
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -40,7 +40,7 @@ export function SignupForm({
         // Set cookie for middleware
         const token = resultAction.payload.access_token
         document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`
-        
+
         router.push("/onboarding")
       }
     } catch (err) {
@@ -80,7 +80,7 @@ export function SignupForm({
               placeholder="johndoe"
               required
               value={formData.username}
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             />
           </Field>
           <Field>
@@ -91,7 +91,7 @@ export function SignupForm({
               placeholder="m@example.com"
               required
               value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </Field>
           <Field>
@@ -101,23 +101,23 @@ export function SignupForm({
               type="password"
               required
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
           </Field>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <Field>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="w-full rounded-full h-11 transition-all hover:scale-[1.01]">
               {loading ? "Creating..." : "Create Account"}
             </Button>
           </Field>
           <FieldSeparator>Or</FieldSeparator>
           <Field className="grid gap-4 w-full">
-            <Button variant="outline" type="button" onClick={handleGoogleLogin}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path
-                  d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                  fill="currentColor"
-                />
+            <Button variant="outline" type="button" onClick={handleGoogleLogin} className="w-full rounded-full h-11 relative hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all hover:scale-[1.01]">
+              <svg className="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20c11.045 0 20-8.955 20-20 0-1.341-.138-2.65-.389-3.917z" />
+                <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
+                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
+                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l0 .002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
               </svg>
               Continue with Google
             </Button>
