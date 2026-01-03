@@ -1,231 +1,37 @@
 "use client"
 
 import * as React from "react"
-import { Mic, PhoneOff, Loader2, Plus, Paperclip, ChevronDown, AudioLines, ArrowUp } from "lucide-react"
+import { Loader2, Plus, Paperclip, ChevronDown, AudioLines, ArrowUp } from "lucide-react"
 import { Orb } from "@/components/orb"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { GoogleGenAI, Modality } from "@google/genai"
-import { AudioRecorder, AudioPlayer } from "@/lib/audio-utils"
-import { m } from "framer-motion"
+import { useGeminiLive } from "@/hooks/use-gemini-live" // Import custom hook
 
 export function BrainstormInterface() {
     const [inputValue, setInputValue] = React.useState("")
-    const [isListening, setIsListening] = React.useState(false)
-    const [status, setStatus] = React.useState<"idle" | "connecting" | "connected" | "error">("idle")
-    const [agentVolume, setAgentVolume] = React.useState(0)
-    const [userVolume, setUserVolume] = React.useState(0)
 
-    const [transcripts, setTranscripts] = React.useState<Array<{
-        role: "user" | "model"
-        text: string
-        isComplete: boolean
-    }>>([])
+    // Use the custom hook for all Gemini logic
+    const {
+        status,
+        isListening,
+        agentVolume,
+        userVolume,
+        transcripts,
+        toggleMic,
+        sendText
+    } = useGeminiLive()
 
-    const recorderRef = React.useRef<AudioRecorder | null>(null)
-    const playerRef = React.useRef<AudioPlayer | null>(null)
-    const sessionRef = React.useRef<any>(null)
-
-    // Debug: Log volume changes
+    // Debug: Log volume changes (Optional preservation of debug log)
     React.useEffect(() => {
         if (agentVolume > 0.01 || userVolume > 0.01) {
-            console.log("📊 Volume:", { agent: agentVolume.toFixed(3), user: userVolume.toFixed(3) })
+            // console.log("📊 Volume:", { agent: agentVolume.toFixed(3), user: userVolume.toFixed(3) })
         }
     }, [agentVolume, userVolume])
 
-    React.useEffect(() => {
-        return () => disconnect()
-    }, [])
-
-    const connect = async () => {
-        setStatus("connecting")
-        try {
-            // 1. Get Token
-            const tokenResp = await fetch("/api/gemini/token")
-            const data = await tokenResp.json()
-            if (!data.token) throw new Error("Failed to get token")
-
-            // 2. Init Client
-            const client = new GoogleGenAI({
-                apiKey: data.token,
-                httpOptions: { apiVersion: 'v1alpha' }
-            })
-
-            // 3. Init Audio
-            playerRef.current = new AudioPlayer((volume) => {
-                setAgentVolume(volume)
-            })
-            recorderRef.current = new AudioRecorder((base64, volume) => {
-                setUserVolume(volume)
-                // Determine connection state before sending
-                // The SDK might not expose a simple 'isConnected' on session, 
-                // but we can trust our status state or try/catch
-                if (sessionRef.current) {
-                    try {
-                        sessionRef.current.sendRealtimeInput({
-                            audio: {
-                                data: base64,
-                                mimeType: "audio/pcm;rate=16000",
-                            },
-                        })
-                    } catch (e) {
-                        console.error("Error ending audio:", e)
-                    }
-                }
-            })
-
-            sessionRef.current = await client.live.connect({
-                model: "gemini-2.5-flash-native-audio-preview-12-2025",
-                config: {
-                    responseModalities: [Modality.AUDIO],
-                    // inputAudioTranscription: {}, // Optional: Enable if you need input transcription config
-                    outputAudioTranscription: {},
-                },
-                callbacks: {
-                    onopen: () => {
-                        console.log("Connected to Gemini Live")
-                        setStatus("connected")
-                        setIsListening(true)
-                        recorderRef.current?.start()
-                    },
-                    onmessage: (msg: any) => {
-                        if (msg.serverContent?.modelTurn?.parts) {
-                            for (const part of msg.serverContent.modelTurn.parts) {
-                                if (part.inlineData?.data) {
-                                    playerRef.current?.play(part.inlineData.data)
-                                }
-                            }
-                        }
-
-                        const { inputTranscription, outputTranscription, turnComplete } = msg.serverContent || {}
-
-                        if (inputTranscription || outputTranscription || turnComplete) {
-                            setTranscripts(prev => {
-                                const newTranscripts = [...prev]
-
-                                // Handle Input Transcription (User)
-                                if (inputTranscription) {
-                                    const text = inputTranscription.text || ""
-
-                                    // Find or create user transcript for this turn
-                                    let userIndex = -1
-                                    for (let i = newTranscripts.length - 1; i >= 0; i--) {
-                                        if (newTranscripts[i].role === "user" && !newTranscripts[i].isComplete) {
-                                            userIndex = i
-                                            break
-                                        }
-                                    }
-
-                                    if (userIndex >= 0) {
-                                        // Append to existing
-                                        newTranscripts[userIndex] = {
-                                            ...newTranscripts[userIndex],
-                                            text: newTranscripts[userIndex].text + text
-                                        }
-                                    } else {
-                                        // Create new
-                                        newTranscripts.push({ role: "user", text, isComplete: false })
-                                    }
-                                }
-
-                                // Handle Output Transcription (Model)
-                                if (outputTranscription) {
-                                    const text = outputTranscription.text || ""
-
-                                    // Find or create model transcript for this turn
-                                    let modelIndex = -1
-                                    for (let i = newTranscripts.length - 1; i >= 0; i--) {
-                                        if (newTranscripts[i].role === "model" && !newTranscripts[i].isComplete) {
-                                            modelIndex = i
-                                            break
-                                        }
-                                    }
-
-                                    if (modelIndex >= 0) {
-                                        // Append to existing - create new object for immutability
-                                        newTranscripts[modelIndex] = {
-                                            ...newTranscripts[modelIndex],
-                                            text: newTranscripts[modelIndex].text + text
-                                        }
-                                    } else {
-                                        // Create new
-                                        newTranscripts.push({ role: "model", text, isComplete: false })
-                                    }
-                                }
-
-                                // Handle Turn Completion
-                                if (turnComplete) {
-                                    for (let i = 0; i < newTranscripts.length; i++) {
-                                        if (!newTranscripts[i].isComplete) {
-                                            newTranscripts[i] = { ...newTranscripts[i], isComplete: true }
-                                        }
-                                    }
-                                }
-
-                                return newTranscripts
-                            })
-                        }
-
-                        if (msg.serverContent?.interrupted) {
-                            console.log("Interrupted")
-                            playerRef.current?.stop()
-                        }
-                    },
-                    onclose: (e: any) => {
-                        console.log("Session closed", e)
-                        disconnect()
-                    },
-                    onerror: (e: any) => {
-                        console.error("Session error", e)
-                        disconnect()
-                    },
-                },
-            })
-        } catch (e) {
-            console.error("Connection failed:", e)
-            setStatus("error")
-            setIsListening(false)
-        }
-    }
-
-    const disconnect = () => {
-        recorderRef.current?.stop()
-        playerRef.current?.stop()
-        if (sessionRef.current) {
-            // Wrap close in try/catch just in case
-            try {
-                sessionRef.current.close()
-            } catch (e) {
-                console.error("Error closing session:", e)
-            }
-            sessionRef.current = null
-        }
-        setIsListening(false)
-        setStatus("idle")
-        setAgentVolume(0)
-        setUserVolume(0)
-    }
-
-    const toggleMic = () => {
-        if (isListening || status === "connecting") {
-            disconnect()
-        } else {
-            connect()
-        }
-    }
-
     const handleSendMessage = () => {
         if (!inputValue.trim()) return
-
-        // Add to transcripts immediately
-        const text = inputValue
-        setTranscripts(prev => [...prev, { role: "user", text, isComplete: true }])
-
-        if (sessionRef.current) {
-            sessionRef.current.sendClientContent({ turns: [text] })
-        }
-
+        sendText(inputValue)
         setInputValue("")
     }
 
@@ -276,7 +82,7 @@ export function BrainstormInterface() {
 
                 {/* Bottom Input Area */}
                 <div className="absolute bottom-10 w-full max-w-3xl px-4">
-                    <div className="relative rounded-[32px] p-[8px] bg-gradient-to-r from-sky-300 via-indigo-300 to-purple-300 shadow-[0_0_15px_rgba(167,139,250,0.3)] hover:shadow-[0_0_20px_rgba(167,139,250,0.5)] transition-all duration-300">
+                    <div className="relative rounded-[32px] p-[2px] bg-gradient-to-r from-sky-300 via-indigo-300 to-purple-300 shadow-[0_0_15px_rgba(167,139,250,0.3)] hover:shadow-[0_0_20px_rgba(167,139,250,0.5)] transition-all duration-300">
                         <div className="relative bg-card rounded-[29px] p-2 flex flex-col">
                             {/* Upper Section: Text Input */}
                             <div className="px-2 pt-2 pb-0">
