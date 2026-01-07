@@ -155,6 +155,17 @@ export function useGeminiLive() {
         return () => disconnect();
     }, [disconnect]);
 
+    // Volume Ducking Logic
+    useEffect(() => {
+        if (playerRef.current) {
+            if (userVolume > 0.05) { // Threshold for ducking
+                playerRef.current.setVolume(0.2);
+            } else {
+                playerRef.current.setVolume(1.0);
+            }
+        }
+    }, [userVolume]);
+
     return {
         status,
         isListening,

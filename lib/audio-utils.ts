@@ -146,16 +146,28 @@ export class AudioPlayer {
   private nextStartTime = 0;
   private onPlay?: (volume: number) => void;
   private analyser: AnalyserNode;
+  private gainNode: GainNode;
 
   constructor(onPlay?: (volume: number) => void) {
     this.context = new AudioContext();
     this.onPlay = onPlay;
     this.analyser = this.context.createAnalyser();
     this.analyser.fftSize = 256;
+    this.gainNode = this.context.createGain();
+    this.gainNode.connect(this.context.destination);
 
     // Periodically check volume if callback is provided
     if (this.onPlay) {
       this.checkVolume();
+    }
+  }
+
+  setVolume(volume: number) {
+    if (this.gainNode) {
+      // Ramp to value to prevent clicking
+      const currentTime = this.context.currentTime;
+      this.gainNode.gain.cancelScheduledValues(currentTime);
+      this.gainNode.gain.setTargetAtTime(volume, currentTime, 0.1);
     }
   }
 
@@ -190,9 +202,9 @@ export class AudioPlayer {
     const source = this.context.createBufferSource();
     source.buffer = buffer;
 
-    // Connect to analyser for volume detection and then to destination
+    // Connect to analyser for volume detection and then to gain node -> destination
     source.connect(this.analyser);
-    this.analyser.connect(this.context.destination);
+    this.analyser.connect(this.gainNode);
 
     // Schedule playback
     const currentTime = this.context.currentTime;
@@ -208,9 +220,11 @@ export class AudioPlayer {
       this.context.close();
       this.context = new AudioContext();
       this.nextStartTime = 0;
-      // Recreate analyser for new context
+      // Recreate nodes for new context
       this.analyser = this.context.createAnalyser();
       this.analyser.fftSize = 256;
+      this.gainNode = this.context.createGain();
+      this.gainNode.connect(this.context.destination);
     }
   }
 

@@ -1,4 +1,4 @@
-import { GoogleGenAI, Modality, ThinkingLevel } from "@google/genai";
+import { GoogleGenAI, Modality, ThinkingLevel, StartSensitivity, EndSensitivity } from "@google/genai";
 import { NextResponse } from "next/server";
 import path from "path";
 import { readFileSync } from "fs";
@@ -59,7 +59,16 @@ export async function GET() {
             },
             thinkingConfig: {
               includeThoughts: false,
+            },
+            realtimeInputConfig: {
+            automaticActivityDetection: {
+              disabled: false, // default
+              startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_LOW,
+              endOfSpeechSensitivity: EndSensitivity.END_SENSITIVITY_LOW,
+              prefixPaddingMs: 20,
+              silenceDurationMs: 100,
             }
+          }
           }
 
         },

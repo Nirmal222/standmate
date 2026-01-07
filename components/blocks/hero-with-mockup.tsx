@@ -85,11 +85,9 @@ export function HeroWithMockup({
             <Button
               asChild
               size="lg"
+              variant="default"
               className={cn(
-                "bg-gradient-to-b from-brand to-brand/90 dark:from-brand/90 dark:to-brand/80",
-                "hover:from-brand/95 hover:to-brand/85 dark:hover:from-brand/80 dark:hover:to-brand/70",
-                "text-white shadow-lg",
-                "transition-all duration-300",
+                "bg-primary",
                 "rounded-full"
               )}
             >
@@ -99,7 +97,7 @@ export function HeroWithMockup({
             <Button
               asChild
               size="lg"
-              variant="ghost"
+              variant="secondary"
               className={cn(
                 "text-foreground/80 dark:text-foreground/70",
                 "transition-all duration-300",

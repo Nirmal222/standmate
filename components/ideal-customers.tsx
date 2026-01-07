@@ -43,18 +43,18 @@ export function IdealCustomers() {
   ]
 
   return (
-    <section className="border-t border-border bg-background py-24 sm:py-32">
+    <section className="border-t border-border bg-background py-16 sm:py-24">
       <div className="w-full">
         <div className="mx-auto max-w-4xl px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-lg font-semibold leading-8 text-primary">
-              Our Focus for the Next 6 Months
+            <h2 className="text-lg leading-8 text-foreground">
+              Our focus for the next 6 months
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Building for the Modern Workforce
+            <p className="mt-2 text-xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Building for the modern workforce
             </p>
           </div>
-          <div className="mt-16">
+          <div className="mt-4">
             <LogoCloud />
           </div>
         </div>

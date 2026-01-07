@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { HoveredLink, Menu, MenuItem, ProductItem } from "@/components/ui/navbar-menu";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { ArrowRight, Sparkle, Sparkles, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -18,6 +18,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { Button } from "./ui/button";
 
 export function Navigation() {
   return (
@@ -81,9 +82,10 @@ function Navbar({ className }: { className?: string }) {
           {/* Desktop CTA Button */}
           <div className="hidden lg:flex items-center gap-4">
             <Link href="/signup">
-              <button className="bg-secondary text-primary font-semibold px-4 py-2 rounded-3xl">
+              <Button variant="outline" className="rounded-full cursor-pointer">
                 Get started
-              </button>
+                <Sparkles className="text-yellow-500 fill-yellow-500" />
+              </Button>
             </Link>
             <AnimatedThemeToggler className="h-8 w-8 rounded-full border border-border bg-background shadow-sm hover:bg-accent hover:text-accent-foreground p-1.5 flex items-center justify-center" />
           </div>

@@ -19,7 +19,7 @@ export function BrainstormInterface() {
         userVolume,
         transcripts,
         toggleMic,
-        sendText
+        sendText,
     } = useGeminiLive()
 
     // Debug: Log volume changes (Optional preservation of debug log)
