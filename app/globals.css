@@ -6,6 +6,7 @@
 :root {
   --radius: 0.65rem;
   --background: oklch(1 0 0);
+  --dialog-bg: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
@@ -40,6 +41,7 @@
 
 .dark {
   --background: oklch(0.141 0.005 285.823);
+  --dialog-bg: rgb(24, 24, 27);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
@@ -62,7 +64,7 @@
   --chart-3: oklch(0.7 0.12 88.5);
   --chart-4: oklch(0.85 0.08 88.5);
   --chart-5: oklch(0.9 0.06 88.5);
-  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar: rgb(24, 24, 27);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.55 0.1 252);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -77,6 +79,7 @@
   --font-sans: "Inter", sans-serif;
   --font-caveat: var(--font-caveat);
   --color-background: var(--background);
+  --color-dialogbg: var(--dialog-bg);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);

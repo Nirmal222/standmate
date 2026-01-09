@@ -108,7 +108,7 @@ export function IntegrationSelector() {
                     Bring Existing Work
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[550px] border shadow-2xl bg-background">
+            <DialogContent className="sm:max-w-[550px] border shadow-2xl bg-dialogbg">
                 <DialogHeader className="pb-6">
                     <DialogTitle className="text-xl font-medium tracking-tight">
                         Bring your existing work
