@@ -17,9 +17,13 @@ import { projectColumns, type ProjectData } from "./columns"
 import { Badge } from "@/components/ui/badge"
 import { useGetProjectsQuery } from "@/services/projectsApi"
 import { IntegrationSelector } from "@/components/integration-selector"
+import { useAppSelector } from "@/lib/redux/hooks"
 
 export default function Page() {
   const { data, isLoading, isError, error } = useGetProjectsQuery()
+  const user = useAppSelector((state) => state.auth.user)
+
+  console.log(user, 1234567654);
 
   const tabs = [
     { value: "outline", label: "Outline" },

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Check, ChevronsUpDown, LayoutGrid, Plus, FileSpreadsheet } from "lucide-react"
+import { useAppSelector } from "@/lib/redux/hooks"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -89,9 +90,41 @@ const integrations = [
 export function IntegrationSelector() {
     const [open, setOpen] = React.useState(false)
     const [selected, setSelected] = React.useState<string | null>(null)
+    const user = useAppSelector((state) => state.auth.user)
 
-    const handleProceed = () => {
-        if (selected) {
+    // Check which integrations are connected
+    const isJiraConnected = user?.integrations?.jira?.connected || false
+
+    const handleProceed = async () => {
+        if (!selected) return
+
+        if (selected === "jira") {
+            try {
+                // Call the backend to get the Jira authorization URL
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/jira/authorize`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`, // Adjust based on your auth setup
+                        "Content-Type": "application/json",
+                    },
+                })
+
+                if (!response.ok) {
+                    throw new Error("Failed to get authorization URL")
+                }
+
+                const data = await response.json()
+
+                // Redirect to Atlassian OAuth page
+                if (data.authorization_url) {
+                    window.location.href = data.authorization_url
+                }
+            } catch (error) {
+                console.error("Error initiating Jira OAuth:", error)
+                // You might want to show a toast notification here
+            }
+        } else {
+            // Handle other integrations
             setOpen(false)
             console.log("Proceed with", selected)
         }
@@ -118,33 +151,65 @@ export function IntegrationSelector() {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-4">
-                    {integrations.map((integration) => (
-                        <div
-                            key={integration.value}
-                            className={cn(
-                                "group relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 p-6 transition-all duration-200 hover:border-primary/20 hover:bg-muted/30",
-                                selected === integration.value
-                                    ? "border-primary bg-primary/5 ring-0"
-                                    : "border-muted/40 bg-transparent"
-                            )}
-                            onClick={() => setSelected(integration.value)}
-                        >
-                            <div className={cn(
-                                "rounded-lg p-2.5 transition-colors",
-                                selected === integration.value ? "bg-background shadow-sm" : "bg-muted/50 group-hover:bg-background"
-                            )}>
-                                <integration.icon className={cn("h-6 w-6", integration.color)} />
+                    {integrations.map((integration) => {
+                        const isConnected = integration.value === "jira" && isJiraConnected
+                        const isComingSoon = integration.value !== "jira"
+                        const isDisabled = isConnected || isComingSoon
+
+                        return (
+                            <div
+                                key={integration.value}
+                                className={cn(
+                                    "group relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 p-6 transition-all duration-200",
+                                    isDisabled ? "cursor-not-allowed" : "cursor-pointer",
+                                    isConnected
+                                        ? "border-green-500/50 bg-green-500/5"
+                                        : isComingSoon
+                                            ? "border-muted/20 bg-muted/5 opacity-60"
+                                            : "hover:border-primary/20 hover:bg-muted/30",
+                                    selected === integration.value && !isDisabled
+                                        ? "border-primary bg-primary/5 ring-0"
+                                        : !isDisabled && "border-muted/40 bg-transparent"
+                                )}
+                                onClick={() => !isDisabled && setSelected(integration.value)}
+                            >
+                                {isConnected && (
+                                    <div className="absolute -top-2 -right-2 flex items-center gap-1 bg-green-500 text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-sm">
+                                        <Check className="h-3 w-3" />
+                                        Connected
+                                    </div>
+                                )}
+                                {isComingSoon && (
+                                    <div className="absolute -top-2 -right-2 bg-muted text-muted-foreground text-[10px] font-medium px-2 py-0.5 rounded-full border">
+                                        Coming Soon
+                                    </div>
+                                )}
+                                <div className={cn(
+                                    "rounded-lg p-2.5 transition-colors",
+                                    isConnected
+                                        ? "bg-green-500/10"
+                                        : isComingSoon
+                                            ? "bg-muted/30"
+                                            : selected === integration.value
+                                                ? "bg-background shadow-sm"
+                                                : "bg-muted/50 group-hover:bg-background"
+                                )}>
+                                    <integration.icon className={cn(
+                                        "h-6 w-6",
+                                        isConnected ? "text-green-500" : integration.color
+                                    )} />
+                                </div>
+                                <div className="space-y-0.5 text-center">
+                                    <h3 className="text-sm font-medium leading-none">
+                                        {integration.label}
+                                    </h3>
+                                    <p className="text-[10px] text-muted-foreground">
+                                        {integration.description}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="space-y-0.5 text-center">
-                                <h3 className="text-sm font-medium leading-none">
-                                    {integration.label}
-                                </h3>
-                                <p className="text-[10px] text-muted-foreground">
-                                    {integration.description}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
                 <div className="flex items-center justify-between">
                     <Button variant="link" className="text-muted-foreground h-auto p-0 cursor-pointer" onClick={() => console.log("View all integrations")}>
