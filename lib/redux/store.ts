@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice'
 import projectReducer from './slices/projectSlice'
 import jiraReducer from './slices/jiraSlice'
 import metaReducer from './slices/metaSlice'
+import { baseApi } from '@/services/baseApi'
 
 export const store = configureStore({
     reducer: {
@@ -12,7 +13,10 @@ export const store = configureStore({
         jira: jiraReducer,
         auth: authReducer,
         meta: metaReducer,
+        [baseApi.reducerPath]: baseApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(baseApi.middleware),
 })
 
 

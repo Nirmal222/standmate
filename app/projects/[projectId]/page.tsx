@@ -31,7 +31,10 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { MoreHorizontal, Link as LinkIcon, Box, CheckCircle2, ListTodo, ChevronDown, Plus } from "lucide-react"
+import { MoreHorizontal, Link as LinkIcon, Box, CheckCircle2, ListTodo, ChevronDown, Plus, Trash2 } from "lucide-react"
+import { useGetProjectMilestonesQuery, useCreateMilestoneMutation, useDeleteMilestoneMutation, useUpdateMilestoneMutation } from "@/services/milestonesApi"
+import { CreateMilestoneModal } from "@/components/projects/create-milestone-modal"
+import { useGetProjectTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useDeleteTaskMutation } from "@/services/tasksApi"
 
 export default function ProjectDetailsPage() {
     const params = useParams()
@@ -45,6 +48,20 @@ export default function ProjectDetailsPage() {
     const project = projects.find(p => p.project_id?.toString() === projectId)
 
     const hasProjects = projects.length > 0;
+
+    const { data: milestones, isLoading: isLoadingMilestones } = useGetProjectMilestonesQuery(parseInt(projectId), {
+        skip: !project
+    })
+    const [createMilestone] = useCreateMilestoneMutation()
+    const [updateMilestone] = useUpdateMilestoneMutation()
+    const [deleteMilestone] = useDeleteMilestoneMutation()
+
+    const { data: tasks, isLoading: isLoadingTasks } = useGetProjectTasksQuery(parseInt(projectId), {
+        skip: !project
+    })
+    const [createTask] = useCreateTaskMutation()
+    const [updateTask] = useUpdateTaskMutation()
+    const [deleteTask] = useDeleteTaskMutation()
 
     useEffect(() => {
         if (!project) {
@@ -240,6 +257,73 @@ export default function ProjectDetailsPage() {
                             </div>
                         </div>
 
+                        {/* Tasks Section */}
+                        <div className="mt-8">
+                            <div className="flex items-center justify-between mb-4 group w-full">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium text-foreground transition-colors">Tasks</span>
+                                    <Badge variant="secondary" className="text-xs font-normal bg-muted text-muted-foreground ml-2">
+                                        {tasks?.length || 0}
+                                    </Badge>
+                                </div>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => createTask({ projectId: parseInt(projectId), task: { title: "New Task", project_id: parseInt(projectId), status: "pending", critical_path_flag: false } })}
+                                    className="h-8 text-xs font-medium"
+                                >
+                                    <Plus className="w-3.5 h-3.5 mr-1" />
+                                    Add Task
+                                </Button>
+                            </div>
+
+                            {isLoadingTasks ? (
+                                <div className="text-sm text-muted-foreground">Loading tasks...</div>
+                            ) : tasks && tasks.length > 0 ? (
+                                <div className="space-y-2 border rounded-lg p-2 bg-background">
+                                    {tasks.map(t => (
+                                        <div key={t.id} className="flex items-center group gap-3 p-2 hover:bg-muted/40 rounded-md border border-transparent hover:border-border/50 transition-colors">
+                                            <button 
+                                                className="shrink-0 flex items-center justify-center text-muted-foreground hover:text-primary transition-colors focus:outline-none"
+                                                onClick={() => updateTask({ taskId: t.id, updates: { status: t.status === "completed" ? "pending" : "completed" } })}
+                                            >
+                                                {t.status === "completed" ? (
+                                                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                                                ) : (
+                                                    <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/40" />
+                                                )}
+                                            </button>
+                                            
+                                            <input 
+                                                type="text"
+                                                className={`bg-transparent border-none outline-none focus:ring-0 flex-1 text-sm ${t.status === "completed" ? "text-muted-foreground line-through" : "text-foreground font-medium"}`}
+                                                defaultValue={t.title}
+                                                onBlur={(e) => {
+                                                    if (e.target.value !== t.title) {
+                                                        updateTask({ taskId: t.id, updates: { title: e.target.value } });
+                                                    }
+                                                }}
+                                            />
+                                            
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="h-6 w-6 opacity-0 group-hover:opacity-100 text-destructive shrink-0"
+                                                onClick={() => deleteTask({ taskId: t.id, projectId: parseInt(projectId) })}
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-muted-foreground bg-muted/20 border border-dashed rounded-lg p-8 text-center flex flex-col items-center justify-center gap-3">
+                                    <ListTodo className="w-8 h-8 text-muted-foreground/30" />
+                                    <p>No tasks yet. Create one to get started!</p>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Description Editor */}
                         <div className="mt-8">
                             <div className="flex items-center gap-2 mb-4 group cursor-pointer w-fit">
@@ -311,19 +395,46 @@ export default function ProjectDetailsPage() {
                             <div className="h-px bg-border/40 w-full" />
 
                             {/* Milestones Section */}
-                            <div className="space-y-3 opacity-60 pointer-events-none">
-                                <div className="flex items-center justify-between group cursor-not-allowed mb-2">
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between group mb-2 cursor-pointer">
                                     <h4 className="text-sm font-medium flex items-center gap-2">
                                         Milestones <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-                                        <Badge variant="secondary" className="ml-1 text-[9px] uppercase tracking-wider font-semibold py-0 h-4 px-1.5">Coming Soon</Badge>
                                     </h4>
-                                    <Button variant="ghost" size="icon" className="h-5 w-5 opacity-0 transition-opacity">
-                                        <Plus className="w-3.5 h-3.5" />
-                                    </Button>
+                                    <CreateMilestoneModal projectId={parseInt(projectId)} />
                                 </div>
-                                <div className="text-xs text-muted-foreground leading-relaxed mt-2 pr-4">
-                                    Add milestones to organize work within your project and break it into more granular stages. <span className="text-foreground cursor-pointer hover:underline">Learn more</span>
-                                </div>
+                                
+                                {isLoadingMilestones ? (
+                                    <div className="text-xs text-muted-foreground">Loading...</div>
+                                ) : milestones && milestones.length > 0 ? (
+                                    <div className="space-y-2 mt-2">
+                                        {milestones.map((m) => (
+                                            <div key={m.milestone_id} className="flex items-center justify-between group text-sm border rounded p-2 hover:bg-muted/50">
+                                                <input 
+                                                    type="text"
+                                                    className="bg-transparent border-none outline-none focus:ring-0 flex-1 text-sm font-medium"
+                                                    defaultValue={m.title}
+                                                    onBlur={(e) => {
+                                                        if (e.target.value !== m.title) {
+                                                            updateMilestone({ milestoneId: m.milestone_id, updates: { title: e.target.value } });
+                                                        }
+                                                    }}
+                                                />
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    className="h-5 w-5 opacity-0 group-hover:opacity-100 text-destructive"
+                                                    onClick={() => deleteMilestone({ milestoneId: m.milestone_id, projectId: parseInt(projectId) })}
+                                                >
+                                                    <Trash2 className="w-3 h-3" />
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-xs text-muted-foreground leading-relaxed mt-2 pr-4">
+                                        Add milestones to organize work within your project and break it into more granular stages.
+                                    </div>
+                                )}
                             </div>
 
                             <div className="h-px bg-border/40 w-full" />

@@ -14,6 +14,10 @@ export type ProjectUpdate = components['schemas']['ProjectUpdate'];
 export type TaskCreate = components['schemas']['TaskCreate'];
 export type TaskResponse = components['schemas']['TaskResponse'];
 
+export type MilestoneCreate = components['schemas']['MilestoneCreate'];
+export type MilestoneResponse = components['schemas']['MilestoneResponse'];
+export type MilestoneUpdate = components['schemas']['MilestoneUpdate'];
+
 export type UserCreate = components['schemas']['UserCreate'];
 export type Token = components['schemas']['Token'];
 

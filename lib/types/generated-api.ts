@@ -140,19 +140,37 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/tasks/": {
+    "/api/v1/tasks/projects/{project_id}/tasks": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List Tasks */
-        get: operations["list_tasks_api_v1_tasks__get"];
+        /** List Project Tasks */
+        get: operations["list_project_tasks_api_v1_tasks_projects__project_id__tasks_get"];
         put?: never;
-        /** Create Task */
-        post: operations["create_task_api_v1_tasks__post"];
+        /** Create Project Task */
+        post: operations["create_project_task_api_v1_tasks_projects__project_id__tasks_post"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tasks/tasks/{task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Task */
+        put: operations["update_task_api_v1_tasks_tasks__task_id__put"];
+        post?: never;
+        /** Delete Task */
+        delete: operations["delete_task_api_v1_tasks_tasks__task_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -292,6 +310,42 @@ export interface paths {
         patch: operations["update_property_preference_api_v1_meta_schemas__entity_type__properties_patch"];
         trace?: never;
     };
+    "/api/v1/projects/{project_id}/milestones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Project Milestones */
+        get: operations["list_project_milestones_api_v1_projects__project_id__milestones_get"];
+        put?: never;
+        /** Create Project Milestone */
+        post: operations["create_project_milestone_api_v1_projects__project_id__milestones_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/milestones/{milestone_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Milestone */
+        put: operations["update_milestone_api_v1_milestones__milestone_id__put"];
+        post?: never;
+        /** Delete Milestone */
+        delete: operations["delete_milestone_api_v1_milestones__milestone_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -346,6 +400,51 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** MilestoneCreate */
+        MilestoneCreate: {
+            /** Title */
+            title: string;
+            /** Description */
+            description?: string | null;
+            /** Order Index */
+            order_index?: number | null;
+            /** Estimated Start Date */
+            estimated_start_date?: string | null;
+            /** Estimated End Date */
+            estimated_end_date?: string | null;
+            /** Project Id */
+            project_id: number;
+        };
+        /** MilestoneResponse */
+        MilestoneResponse: {
+            /** Title */
+            title: string;
+            /** Description */
+            description?: string | null;
+            /** Order Index */
+            order_index?: number | null;
+            /** Estimated Start Date */
+            estimated_start_date?: string | null;
+            /** Estimated End Date */
+            estimated_end_date?: string | null;
+            /** Milestone Id */
+            milestone_id: number;
+            /** Project Id */
+            project_id: number;
+        };
+        /** MilestoneUpdate */
+        MilestoneUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Order Index */
+            order_index?: number | null;
+            /** Estimated Start Date */
+            estimated_start_date?: string | null;
+            /** Estimated End Date */
+            estimated_end_date?: string | null;
         };
         /** ProjectCreate */
         ProjectCreate: {
@@ -443,8 +542,6 @@ export interface components {
             status: string | null;
             /** Milestone Id */
             milestone_id?: number | null;
-            /** Scenario Id */
-            scenario_id?: number | null;
             /** Duration Days */
             duration_days?: number | null;
             /** Estimated Start Date */
@@ -458,6 +555,8 @@ export interface components {
             critical_path_flag: boolean;
             /** Order Index */
             order_index?: number | null;
+            /** Project Id */
+            project_id: number;
         };
         /** TaskResponse */
         TaskResponse: {
@@ -472,8 +571,6 @@ export interface components {
             status: string | null;
             /** Milestone Id */
             milestone_id?: number | null;
-            /** Scenario Id */
-            scenario_id?: number | null;
             /** Duration Days */
             duration_days?: number | null;
             /** Estimated Start Date */
@@ -489,6 +586,32 @@ export interface components {
             order_index?: number | null;
             /** Id */
             id: number;
+            /** Project Id */
+            project_id: number;
+        };
+        /** TaskUpdate */
+        TaskUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Milestone Id */
+            milestone_id?: number | null;
+            /** Duration Days */
+            duration_days?: number | null;
+            /** Estimated Start Date */
+            estimated_start_date?: string | null;
+            /** Estimated End Date */
+            estimated_end_date?: string | null;
+            /**
+             * Critical Path Flag
+             * @default false
+             */
+            critical_path_flag: boolean;
+            /** Order Index */
+            order_index?: number | null;
         };
         /** Token */
         Token: {
@@ -741,11 +864,13 @@ export interface operations {
             };
         };
     };
-    list_tasks_api_v1_tasks__get: {
+    list_project_tasks_api_v1_tasks_projects__project_id__tasks_get: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                project_id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -759,18 +884,64 @@ export interface operations {
                     "application/json": components["schemas"]["TaskResponse"][];
                 };
             };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
     };
-    create_task_api_v1_tasks__post: {
+    create_project_task_api_v1_tasks_projects__project_id__tasks_post: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                project_id: number;
+            };
             cookie?: never;
         };
         requestBody: {
             content: {
                 "application/json": components["schemas"]["TaskCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_task_api_v1_tasks_tasks__task_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                task_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskUpdate"];
             };
         };
         responses: {
@@ -782,6 +953,35 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TaskResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_task_api_v1_tasks_tasks__task_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                task_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -1095,6 +1295,136 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_project_milestones_api_v1_projects__project_id__milestones_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MilestoneResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_project_milestone_api_v1_projects__project_id__milestones_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MilestoneCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MilestoneResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_milestone_api_v1_milestones__milestone_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                milestone_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MilestoneUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MilestoneResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_milestone_api_v1_milestones__milestone_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                milestone_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

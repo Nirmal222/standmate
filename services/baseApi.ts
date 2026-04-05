@@ -6,6 +6,6 @@ export const baseApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: process.env.NEXT_PUBLIC_API_URL || '/api',
     }),
-    tagTypes: ['Projects', 'Brainstorms', 'Dashboard'],
+    tagTypes: ['Projects', 'Brainstorms', 'Dashboard', 'Milestones', 'ProjectMilestones', 'Tasks', 'ProjectTasks'],
     endpoints: () => ({}),
 })
